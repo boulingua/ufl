@@ -39,7 +39,10 @@ gaps for a later stretch, not promised up front (§4).
    the curriculum mapping and appendix tables must carry more weight.
 4. **TTS/voice correctness.** Native-voice audio must use a genuinely Ukrainian
    Piper voice (not a Russian fallback), or the `ґ/ї/є` and stress patterns will
-   be wrong. Availability must be verified before audio phases start (§2, §6).
+   be wrong. Availability is no longer the constraint — five `uk_UA` voices are
+   published, four of them licence-clear and one of them carrying three speakers
+   (§2). What still has to be checked before audio phases start is pronunciation
+   quality (§2, §6).
 5. **Strong, time-sensitive demand.** Interest in Ukrainian is high right now.
    That argues for shipping a usable MVP (Level 0 + A1) early rather than
    withholding until the full A1–B1 course is complete (§8).
@@ -71,13 +74,24 @@ Each decision below is a recommendation, not an open question.
 - **Keyboard / input guidance.** Ship a short "typing Ukrainian" note in
   *get-started* (Ukrainian keyboard layout, the `ґ`/apostrophe positions,
   phonetic input options) — learners must be able to type answers.
-- **Native voice / Piper TTS.** **Decision:** use a genuine Ukrainian Piper voice.
-  rhasspy/piper-voices publishes Ukrainian voices (e.g. `uk_UA-ukrainian_tts-*`,
-  `uk_UA-lada-x_low`). **Action — verify before Phase A2 audio:** add the chosen
-  `uk_UA-*` entry to `audiogen/get_voices.sh`, download, and spot-check `ґ ї є`,
-  the apostrophe, and word stress on real sentences. A second `uk_UA-*` voice is
-  desirable for dialogue alternation; if only one exists, alternate by
-  pitch/speed. **Never** substitute a Russian voice.
+- **Native voice / Piper TTS.** **Decision:** use a genuine Ukrainian Piper
+  voice — and upstream is far better stocked than this section previously
+  assumed. rhasspy/piper-voices publishes **five** `uk_UA` voices, four of them
+  licence-clear: **`uk_UA-ukrainian_tts-medium`** (**CC0**) as primary, with
+  `uk_UA-tetiana-high`, `uk_UA-mykyta-high` and `uk_UA-oleksa-high` (all
+  **Apache-2.0**, all *high* tier) as the fallback ladder. Two consequences.
+  First, **dialogue alternation is already solved**: `ukrainian_tts` carries
+  **three speakers in one model**, selected through `speaker_id_map`, so
+  alternating turns come from the primary voice alone — no second model, and no
+  pitch/speed workaround. Second, `uk_UA-lada-x_low` is the weakest voice in the
+  catalogue (`x_low` tier) and is not a candidate; the Apache-2.0 high-tier
+  voices are the real fallback. **Action — before Phase A2 audio:** add the row
+  to `audiogen/voices.yml` (relocating to `kit/audio/voices.yml` at F1) rather
+  than hand-editing a download script — voice IDs are read from that file and
+  are never hand-typed, because a transliterated ID is how a 404 gets written
+  into a build — then download and spot-check `ґ ї є`, the apostrophe, and word
+  stress on real sentences. Strip U+0301 before synthesis; keep `ґ ї є` and the
+  U+02BC/U+2019 apostrophe. **Never** substitute a Russian voice.
 - **Level-0 script onboarding stage.** **Decision:** a real, first-class course
   section `content/level-0/` (script onboarding) shipped **before** A1 — see §5.
 
@@ -154,9 +168,15 @@ conformance failure.
 uses `framework: cefr` with `cefr_level` and `cefr_can_do`. Each can-do resolves
 to a curriculum ID `{LEVEL}.{DOMAIN}.{SCALE}.{SEQ}` (e.g.
 `A1.INT.information-exchange.01`, `A2.REC.reading-for-orientation.02`). Maintain a
-unit↔ID coverage manifest; run `curriculum/scripts/id-audit.sh` (format, global
-uniqueness, `implements:` resolves to a real in-scope (scale, level)) as a
-**course gate** so no unit references a non-existent descriptor.
+unit↔ID coverage manifest so no unit references a non-existent descriptor —
+format, global uniqueness, and every `implements:` resolving to a real in-scope
+(scale, level).
+
+**Gate.** The reusable workflow
+`boulingua/.github/.github/workflows/course-build.yml@v1` runs
+`python .curriculum/scripts/conformance_audit.py resolve --manifest
+conformance.yml --content content`. `id-audit.sh` audits the framework's *own*
+level files and **cannot** validate this repo. Do not wire it here.
 
 ---
 
@@ -185,7 +205,8 @@ deck + worksheet; sibling exam.
 ~16 units: past tense + aspect intro, more cases (genitive, dative, locative,
 instrumental), travel, health, work, past experiences, comparisons, future,
 prepositions of place/motion. Acceptance as A1, plus audio for all dialogues/
-texts using the verified `uk_UA-*` voice.
+texts using the verified `uk_UA-ukrainian_tts-medium` voice, with dialogue turns
+alternating across its three speaker IDs (§2).
 
 **Phase 3 — B1 (`content/level-b1/`) · L.**
 ~18 units: opinions/argument, conditionals, reported speech, aspect in depth,
@@ -205,7 +226,7 @@ common errors; cultural/intercultural notes; assessment grid. Each ≥1800 chars
 carries a VG Wort mark (§7).
 
 **Per-phase acceptance criteria (all phases).** (a) every unit's `curriculum`
-block resolves via `id-audit.sh`; (b) `hugo --gc` builds clean; (c) VG Wort
+block resolves under the §4 conformance gate; (b) `hugo --gc` builds clean; (c) VG Wort
 coverage audit shows **0** unregistered editorial pages; (d) materials committed
 and thumbnailed; (e) exams present and downloadable; (f) link-check green.
 
@@ -225,12 +246,16 @@ and thumbnailed; (e) exams present and downloadable; (f) link-check green.
   `pdf_attribution.py`) — no TeX Live in the deploy path. Cyrillic in LaTeX needs
   a Unicode engine (XeLaTeX/LuaLaTeX) with a Cyrillic-covering font — confirm the
   slidegen/sheetgen toolchain uses one before Phase 0 materials.
-- **Native-voice audio.** Use **audiogen** (Piper) with a verified `uk_UA-*`
-  voice (§2). Add it to `audiogen/get_voices.sh`; generate OGG/Opus into
+- **Native-voice audio.** Use **audiogen** (Piper) with
+  **`uk_UA-ukrainian_tts-medium`** (CC0, three speakers in one model) per §2. Add
+  its row to `audiogen/voices.yml` (`kit/audio/voices.yml` from F1) rather than
+  hand-editing a download script; generate OGG/Opus into
   `static/materials/audio/<unit>/` with transcripts in `data/audio/<unit>.json`,
-  paired with on-page transcripts. **Decision/note:** Ukrainian Piper voices are
-  published; the exact voice + `ґ/ї/є`/stress quality must be spot-checked before
-  audio ships. Audio is committed, not built in CI.
+  paired with on-page transcripts. **Decision/note:** Ukrainian is well served —
+  five published voices, three of them *high* tier under Apache-2.0 — so
+  availability and licence are not risks; the chosen voice's `ґ/ї/є` and stress
+  quality must still be spot-checked before audio ships. Strip U+0301 before
+  synthesis; keep `ґ ї є` and the apostrophe. Audio is committed, not built in CI.
 - **Thumbnails & downloads.** `render_thumbs.py` for deck/worksheet previews;
   the `{{< downloads >}}` shortcode surfaces committed files; `verify_downloads.py`
   gate confirms every referenced file exists and is attributed.
@@ -279,10 +304,12 @@ needs roughly **~36 marks** first.
   pentagon, legal placeholders filled, first green build on GitHub Pages.
   *Dependencies:* none. *Blocks:* everything.
 - **M1 — Font & voice de-risking.** Confirm `ґ і ї є` + apostrophe render in the
-  web font and in slidegen/sheetgen (XeLaTeX); verify a real `uk_UA-*` Piper voice
-  and stress quality. *Blocks:* materials + audio phases.
+  web font and in slidegen/sheetgen (XeLaTeX); spot-check
+  `uk_UA-ukrainian_tts-medium` for `ґ/ї/є` and stress quality. The voice search
+  itself is finished (§2) — this is an audition, not a survey. *Blocks:*
+  materials + audio phases.
 - **M2 — Curriculum scaffold.** `conformance.yml` (`core`), unit↔ID manifest,
-  `id-audit.sh` wired as a gate. *Blocks:* content acceptance.
+  the §4 conformance gate wired in CI. *Blocks:* content acceptance.
 - **M3 — MVP: Level 0 + A1 live.** Script onboarding + A1 units, exams,
   materials, audio, VG Wort marks (~36). This is the **public launch** tranche
   given current demand.
@@ -294,16 +321,21 @@ needs roughly **~36 marks** first.
 **Definition of done / ready to flip from *coming soon* to *active* on the world
 map:** Level 0 + A1 complete and live (M3) — decode-and-type competence plus a
 full A1 level with exams, committed materials, native audio, VG Wort coverage at
-0 unregistered pages, `id-audit.sh` green, and a published `conformance.yml`.
+0 unregistered pages, the §4 conformance gate green, and a published
+`conformance.yml`.
 A2/B1 then extend the live course without another "coming soon" gate.
 
 ---
 
 ## 9. Open decisions & risks
 
-- **Piper voice quality (risk).** A `uk_UA-*` voice may mishandle stress, `ґ`, or
-  the apostrophe. *Mitigation:* spot-check at M1; keep a second voice option;
-  never fall back to Russian TTS. Audio phase is gated on this.
+- **Piper voice quality (risk).** Availability and licence are settled — five
+  `uk_UA` voices, four licence-clear, a three-speaker CC0 primary (§2) — so the
+  only open question is whether `uk_UA-ukrainian_tts-medium` handles stress, `ґ`
+  and the apostrophe well enough. *Mitigation:* spot-check at M1; the fallback
+  ladder is the three Apache-2.0 *high*-tier voices (`tetiana`, `mykyta`,
+  `oleksa`), then transcript-only — **never** Russian TTS, at any point, for any
+  segment. Audio phase is gated on this.
 - **Font glyph coverage (risk).** Theme system fonts may box `ґ`/`ї`/`є` on some
   platforms. *Mitigation:* self-host an OFL Cyrillic face via `custom.css` only.
 - **Orthography drift (decision).** Lock to the 2019 «Український правопис»; note
