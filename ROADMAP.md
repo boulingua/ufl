@@ -3,7 +3,7 @@
 Build plan for the boulingua **Ukrainian as a Foreign Language** course (`ufl`,
 signature accent `#C723A1`). This repo is currently a scaffold (LICENSE, README,
 brand icons) marked *coming soon*. This document is the actionable path to a
-complete course — content **and** website — instantiated from `pagegen`, mapped
+complete course — content **and** website — built on the `kit` platform, mapped
 to the boulingua `curriculum` framework, and compliant with the VG Wort standard.
 
 ---
@@ -66,10 +66,10 @@ Each decision below is a recommendation, not an open question.
 - **Web fonts / script coverage.** hugo-coder's stack must render full Ukrainian
   Cyrillic **including `ґ і ї є` and the apostrophe**. **Decision:** verify the
   theme's system-font stack shows these four letters correctly across
-  Windows/macOS/Linux/Android; if any glyph falls back or boxes, self-host a
-  libre Cyrillic-covering face (e.g. a Ukrainian-tested cut of a SIL/OFL family)
-  as a `woff2` under `static/` and wire it via `assets/css/custom.css` — the only
-  sanctioned CSS touch-point. Do **not** edit the accent system (driven by
+  Windows/macOS/Linux/Android; if any glyph falls back or boxes, raise it against the kit's font manifest: F3
+  ships a Cyrillic subset of full upstream Source Sans 3, and Ukrainian's four
+  letters are part of that subset's acceptance. There is no course-side font or CSS
+  to touch — a course repo has neither `static/fonts/` nor `assets/css/`. Do **not** edit the accent system (driven by
   `data/accents.yaml`, `code = ufl`, already defined).
 - **Keyboard / input guidance.** Ship a short "typing Ukrainian" note in
   *get-started* (Ukrainian keyboard layout, the `ґ`/apostrophe positions,
@@ -86,9 +86,9 @@ Each decision below is a recommendation, not an open question.
   pitch/speed workaround. Second, `uk_UA-lada-x_low` is the weakest voice in the
   catalogue (`x_low` tier) and is not a candidate; the Apache-2.0 high-tier
   voices are the real fallback. **Action — before Phase A2 audio:** add the row
-  to `audiogen/voices.yml` (relocating to `kit/audio/voices.yml` at F1) rather
-  than hand-editing a download script — voice IDs are read from that file and
-  are never hand-typed, because a transliterated ID is how a 404 gets written
+  to `kit/audio/voices.yml` — the single source of truth for voice IDs — rather
+  than hand-editing a download script; IDs are read from that file and are never
+  hand-typed, because a transliterated ID is how a 404 gets written
   into a build — then download and spot-check `ґ ї є`, the apostrophe, and word
   stress on real sentences. Strip U+0301 before synthesis; keep `ґ ї є` and the
   U+02BC/U+2019 apostrophe. **Never** substitute a Russian voice.
@@ -97,37 +97,69 @@ Each decision below is a recommendation, not an open question.
 
 ---
 
-## 3. Instantiation from pagegen
+## 3. Instantiation from the kit
 
-Stand up the buildable site by copying the template and changing only the marked
-values (per `pagegen/README.md` step list). Concretely:
+Stand up the buildable site by building this repo *around* the kit and changing
+only the marked values (per `kit/README.md`). Nothing shared is copied.
+Concretely:
 
-1. **Copy the template** into this repo, preserving `pagegen`'s layout, scripts,
-   gates, `go.mod`, `layouts/`, `archetypes/`, `data/`, and CI. Do **not** copy
-   `public/`. Keep the existing `ufl/README.md`, `LICENSE`, and `brand/`.
-2. **Edit `hugo.toml`** (only the marked keys):
+1. **Create the repo around the kit.** `ufl` holds a short `hugo.toml` (baseURL,
+   title, languageCode, `[params]`, menus) whose `[module]` block carries
+
+   ```toml
+   [module]
+     [[module.imports]]
+       path = "github.com/boulingua/kit"
+   ```
+
+   plus a `go.mod`/`go.sum` requiring `github.com/boulingua/kit` at the pinned
+   tag (`v1.0.0`), `boulingua.yml` (the per-course config the gate battery
+   reads), the twelve-line `.github/workflows/deploy.yml` calling the org's
+   reusable workflow, an empty `content/` skeleton with an empty
+   `data/vgwort.yaml`, and the legal pages. Keep the existing `ufl/README.md`,
+   `LICENSE`, and `brand/`. Do **not** copy `layouts/`, `assets/`, `i18n/`,
+   `archetypes/`, `scripts/` or the gates, nor the kit's `data/` — this repo
+   keeps only its own `vgwort.yaml` there. They must never appear in this repo,
+   because they are the drift surface and a file that is not here cannot fork.
+   Hugo resolves the layout side from the module; CI checks the kit out at the
+   pinned tag so `scripts/` and the gate battery are on disk before Hugo runs.
+   Never track `public/`.
+2. **Vendor `_materials/`.** Run `kit materials sync` — it assembles the kit's
+   `latex/`, `fonts/` and `brand/icons/` into the flat tree the LaTeX build
+   expects — and commit it. This is the one vendored surface, because XeLaTeX
+   cannot read a Hugo module; every file is verified against the digests in
+   `kit.lock`, so a hand-edit fails the build rather than forking silently.
+   (Earlier drafts said to copy `_materials/` from the template — `pagegen`
+   never had one to copy.)
+3. **Edit `hugo.toml`** (only the marked keys):
    - `baseURL = "https://boulingua.github.io/ufl/"`
    - `title = "Ukrainian — S. Le Boulanger"`
    - `languageCode = "uk"`, `defaultContentLanguage = "uk"`
    - `[params].navTitle = "Українська"` (or "Ukrainian"), `description`,
      `keywords = "Ukrainian,Ukrainian language,Cyrillic,CEFR,curriculum,OER"`
-   - `params.code = "ufl"` (selects the `#C723A1` accent from `data/accents.yaml`)
+   - `params.code = "ufl"` (selects the `#C723A1` accent from the kit's
+     `data/accents.yaml`). Setting it is not optional: the kit ships the neutral
+     graphite `template` accent, so an unconfigured course looks obviously wrong
+     instead of looking like DaF.
    - `[[params.social]].url = "https://github.com/boulingua/ufl"`
    - `[params.plausible].domain = "boulingua.github.io/ufl"` (kept **last**, per
      the TOML sub-table trap warning)
    - `[[menu.main]]` sections mirroring `content/`: **Level 0**, **A1**, **A2**,
      **B1**, **Materials** (Slide decks / Worksheets), **About**, **Legal**.
-3. **Brand.** `data/accents.yaml` already carries `ufl` (`#C723A1` / hover
-   `#A01C82` / dark `#E77ECE` / dark_hover `#EFA9DE`) — confirm, do not edit.
-   Regenerate the pentagon + favicons: `python brand/make_icon.py` (writes into
-   `static/` / `brand/`). The existing `brand/icon.svg|png` are already on-hue.
-4. **Legal.** Fill the ⟨…⟩ placeholders in `impressum.md`, `datenschutz.md`,
+4. **Brand.** The kit's `data/accents.yaml` already carries `ufl` (`#C723A1` /
+   hover `#A01C82` / dark `#E77ECE` / dark_hover `#EFA9DE`) — confirm, do not
+   edit, and keep no `accents.yaml` in this repo; it arrives with the module.
+   Regenerate the pentagon + favicons with the kit's `brand/make_icon.py`
+   (writes into this repo's `static/` / `brand/`). The existing
+   `brand/icon.svg|png` are already on-hue.
+5. **Legal.** Fill the ⟨…⟩ placeholders in `impressum.md`, `datenschutz.md`,
    `haftungsausschluss.md`. In `datenschutz.md` keep the VG Wort METIS disclosure.
-   Once filled, remove `|| true` from the legal-placeholder gate in CI.
-5. **First green build.** `hugo --minify --gc` locally; fix any theme glyph/menu
-   issues; push to `main`; confirm `.github/workflows/build-deploy.yml` runs the
-   gate battery and deploys to **GitHub Pages**. This is the "empty but live"
-   milestone — the site builds and serves before any content lands.
+   Once filled, remove `|| true` from the legal-placeholder gate.
+6. **First green build.** `hugo --minify --gc` locally; fix any theme glyph/menu
+   issues; push to `main`; confirm `.github/workflows/deploy.yml` builds with
+   `--panicOnWarning`, runs the gate battery and deploys to **GitHub Pages**.
+   This is the "empty but live" milestone — the site builds and serves before any
+   content lands.
 
 ---
 
@@ -237,19 +269,18 @@ and thumbnailed; (e) exams present and downloadable; (f) link-check green.
 - **Section landings via shortcodes.** Every `_index.md` (`page_type: section`)
   uses `{{< hero >}} / {{< kicker >}} / {{< lead >}}` and `{{< card-grid >}}` /
   `{{< card >}}` for unit tiles — **never raw HTML** (per the standard). Level
-  hubs, Materials hub, About all use the shortcode set already in
+  hubs, Materials hub, About all use the shortcode set the kit ships in its
   `layouts/_shortcodes/`.
-- **Materials pipeline.** Generate decks and worksheets locally from the branded
-  **slidegen** (`.odp` + PDF) and **sheetgen** (PDF worksheets) LaTeX/ODF
-  templates keyed to the `ufl` accent; **commit** outputs under
+- **Materials pipeline.** Generate decks and worksheets locally from the kit's
+  branded LaTeX/ODF templates (`kit/latex/`, vendored into `_materials/`) —
+  `.odp` + PDF decks, PDF worksheets — keyed to the `ufl` accent; **commit** outputs under
   `static/materials/` + `static/downloads/`. CI only *verifies* (`verify_downloads.py`,
   `pdf_attribution.py`) — no TeX Live in the deploy path. Cyrillic in LaTeX needs
   a Unicode engine (XeLaTeX/LuaLaTeX) with a Cyrillic-covering font — confirm the
-  slidegen/sheetgen toolchain uses one before Phase 0 materials.
-- **Native-voice audio.** Use **audiogen** (Piper) with
+  kit's LaTeX toolchain uses one before Phase 0 materials.
+- **Native-voice audio.** Use the kit's Piper pipeline (`kit/audio/`) with
   **`uk_UA-ukrainian_tts-medium`** (CC0, three speakers in one model) per §2. Add
-  its row to `audiogen/voices.yml` (`kit/audio/voices.yml` from F1) rather than
-  hand-editing a download script; generate OGG/Opus into
+  its row to `kit/audio/voices.yml` rather than hand-editing a download script; generate OGG/Opus into
   `static/materials/audio/<unit>/` with transcripts in `data/audio/<unit>.json`,
   paired with on-page transcripts. **Decision/note:** Ukrainian is well served —
   five published voices, three of them *high* tier under Apache-2.0 — so
@@ -267,7 +298,7 @@ and thumbnailed; (e) exams present and downloadable; (f) link-check green.
 **Required and non-skippable.** Every content page that is an original creative
 Sprachwerk of **≥ 1800 rendered characters** — every unit, every exam, every
 appendix, and long-form editorial prose (About, get-started) — receives **one**
-VG Wort Zählmarke, per `pagegen/docs/vgwort-standard.md`. Navigation surfaces
+VG Wort Zählmarke, per `kit/docs/vgwort-standard.md`. Navigation surfaces
 (home, Materials hub, tag indexes, paginated continuations) and the **templated
 legal pages** (Impressum/Datenschutz/Haftungsausschluss) get **no** mark.
 
@@ -300,11 +331,11 @@ needs roughly **~36 marks** first.
 
 ## 8. Milestones & sequencing
 
-- **M0 — Site live (empty).** §3 done: template instantiated, `ufl` accent +
-  pentagon, legal placeholders filled, first green build on GitHub Pages.
+- **M0 — Site live (empty).** §3 done: repo standing on the kit module with
+  `_materials/` vendored, `ufl` accent + pentagon, legal placeholders filled, first green build on GitHub Pages.
   *Dependencies:* none. *Blocks:* everything.
 - **M1 — Font & voice de-risking.** Confirm `ґ і ї є` + apostrophe render in the
-  web font and in slidegen/sheetgen (XeLaTeX); spot-check
+  web font and in the kit's LaTeX templates (XeLaTeX); spot-check
   `uk_UA-ukrainian_tts-medium` for `ґ/ї/є` and stress quality. The voice search
   itself is finished (§2) — this is an audition, not a survey. *Blocks:*
   materials + audio phases.
