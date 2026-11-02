@@ -1,0 +1,158 @@
+{
+  "scope": "Pronunciation drafts and one A1 teaching unit with its assessment; no M2 or achieved coverage claim",
+  "sources": [
+    {
+      "url": "https://mon.gov.ua/osvita-2/zagalna-serednya-osvita/ukrainskiy-pravopis",
+      "use": "Official2019/2026 editions; current2026 sections4.1,§3,§7 checked for elementary script facts"
+    },
+    {
+      "url": "https://mon.gov.ua/static-objects/mon/sites/1/zagalna%20serednya/Pravopys.2019/ukrayinskii-pravopis-oficiine-vidannia-2026.pdf",
+      "use": "Exact2026 primary PDF: alphabet printedp17; apostrophe printedp20"
+    },
+    {
+      "url": "https://tc-terminology.lpnu.ua/TK_Work/KMU_N55_2010_Translit.htm",
+      "use": "Institutional reproduction of national transliteration table; Olena,Andrii,Kyiv,Lviv"
+    }
+  ],
+  "pages": [
+    {
+      "page": "a1/units/unit01-erste-begegnung",
+      "sha256": "fc26ac6043a2ac6fa65dc0b35a40af3aeb1d245a11baf2cf314a2023838d20c4",
+      "review_status": "pending",
+      "reviewer": null,
+      "mappings": [
+        {
+          "id": "A1.REC.overall-reading-comprehension.01",
+          "statement": "You can make sense of very short, simple texts one phrase at a time, spotting familiar names, words and basic phrases and rereading as needed.",
+          "basis": "proposed",
+          "task_evidence": "Input/Practise1/2 identify Ukrainian-script names and two explicitly stated places; exam1 extracts four facts.",
+          "review_decision": null
+        },
+        {
+          "id": "A1.INT.conversation.03",
+          "statement": "You introduce someone and use basic phrases for greeting and taking your leave.",
+          "basis": "proposed",
+          "task_evidence": "Apply performs introductions and leave-taking with fictional roles; exam3 observes both roles.",
+          "review_decision": null
+        },
+        {
+          "id": "A1.INT.information-exchange.05",
+          "statement": "I can tell people my name and ask other people theirs.",
+          "basis": "proposed",
+          "task_evidence": "Practise4 and Apply distinguish tebe/vas name questions; exam3 asks and answers names.",
+          "review_decision": null
+        },
+        {
+          "id": "A1.LING.orthographic-control.01",
+          "statement": "You copy familiar words and short phrases (signs, instructions, object names, shop names, set phrases), spell your address, nationality, and other personal details, and use basic punctuation like full stops and question marks.",
+          "basis": "proposed",
+          "task_evidence": "Practise3 preserves apostrophe and Cyrillic letters; exam2 checks four exact known forms. Transliteration is temporary support only.",
+          "review_decision": null
+        },
+        {
+          "id": "A1.SOC.sociolinguistic-appropriateness.01",
+          "statement": "I can make basic social contact using the simplest everyday polite forms: greetings and goodbyes, introductions, and saying please, thank you, and sorry.",
+          "basis": "proposed",
+          "task_evidence": "Input/Practise4/5 contrast familiar/polite routines and repetition; Apply/exam3 use greetings, thanks and repair.",
+          "review_decision": null
+        }
+      ],
+      "source_revisions": [
+        {
+          "previous_sha256": "211118864156d78e6b04d9e35f60eb7025ab1d315068c17814517e5c0b18f9ef",
+          "reason": "Added verified draft download metadata; teaching body unchanged."
+        }
+      ]
+    },
+    {
+      "page": "a1/units/unit01-erste-begegnung-exam",
+      "sha256": "e8d1026c8215d97791d3939ffc2d2c1d895ce1fb964f7cff65ff8badddb0ede5",
+      "review_status": "pending",
+      "reviewer": null,
+      "mappings": [
+        {
+          "id": "A1.REC.overall-reading-comprehension.01",
+          "statement": "You can make sense of very short, simple texts one phrase at a time, spotting familiar names, words and basic phrases and rereading as needed.",
+          "basis": "proposed",
+          "task_evidence": "Input/Practise1/2 identify Ukrainian-script names and two explicitly stated places; exam1 extracts four facts.",
+          "review_decision": null
+        },
+        {
+          "id": "A1.INT.conversation.03",
+          "statement": "You introduce someone and use basic phrases for greeting and taking your leave.",
+          "basis": "proposed",
+          "task_evidence": "Apply performs introductions and leave-taking with fictional roles; exam3 observes both roles.",
+          "review_decision": null
+        },
+        {
+          "id": "A1.INT.information-exchange.05",
+          "statement": "I can tell people my name and ask other people theirs.",
+          "basis": "proposed",
+          "task_evidence": "Practise4 and Apply distinguish tebe/vas name questions; exam3 asks and answers names.",
+          "review_decision": null
+        },
+        {
+          "id": "A1.LING.orthographic-control.01",
+          "statement": "You copy familiar words and short phrases (signs, instructions, object names, shop names, set phrases), spell your address, nationality, and other personal details, and use basic punctuation like full stops and question marks.",
+          "basis": "proposed",
+          "task_evidence": "Practise3 preserves apostrophe and Cyrillic letters; exam2 checks four exact known forms. Transliteration is temporary support only.",
+          "review_decision": null
+        },
+        {
+          "id": "A1.SOC.sociolinguistic-appropriateness.01",
+          "statement": "I can make basic social contact using the simplest everyday polite forms: greetings and goodbyes, introductions, and saying please, thank you, and sorry.",
+          "basis": "proposed",
+          "task_evidence": "Input/Practise4/5 contrast familiar/polite routines and repetition; Apply/exam3 use greetings, thanks and repair.",
+          "review_decision": null
+        }
+      ]
+    }
+  ],
+  "native_review": null,
+  "pedagogical_review": null,
+  "audio_decision": "transcript-only draft; no recording approved",
+  "reference_pages": [
+    {
+      "page": "aussprache/abetka",
+      "sha256": "aa8c88bf5849c287b44237ea4f0ebb4fa44e9e710f47bb40d8164a772d7526b2",
+      "review_status": "pending",
+      "reviewer": null,
+      "checks": [
+        "Check script and example spelling against cited primary references",
+        "Check pronunciation explanations and scoped exceptions",
+        "Exercise instructions with intended beginners",
+        "Review any future recording separately; no audio approval inferred"
+      ]
+    },
+    {
+      "page": "aussprache/apostroph-und-ji",
+      "sha256": "95028413b16f8edd8941bc574d9ee4f2e29ccf3cd8f91fd70bd3dd7fba42acad",
+      "review_status": "pending",
+      "reviewer": null,
+      "checks": [
+        "Check script and example spelling against cited primary references",
+        "Check pronunciation explanations and scoped exceptions",
+        "Exercise instructions with intended beginners",
+        "Review any future recording separately; no audio approval inferred"
+      ]
+    },
+    {
+      "page": "aussprache/umschrift",
+      "sha256": "087cd1ec11f346f1364eae0bd146811f9104a979bde095de26b8057c057b0f72",
+      "review_status": "pending",
+      "reviewer": null,
+      "checks": [
+        "Check script and example spelling against cited primary references",
+        "Check pronunciation explanations and scoped exceptions",
+        "Exercise instructions with intended beginners",
+        "Review any future recording separately; no audio approval inferred"
+      ]
+    }
+  ],
+  "edition_review": {
+    "previous_roadmap_reference": "2019",
+    "consulted_primary_edition": "2026",
+    "verified_scope": "Alphabet4.1, ї§3, apostrophe§7; no complete orthography-difference audit claimed",
+    "full_course_norm_review": "pending"
+  }
+}
